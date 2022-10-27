@@ -1,9 +1,10 @@
-import {TestBed } from '@angular/core/testing'
+import { TestBed } from '@angular/core/testing'
 import { first } from "rxjs";
 import { Post } from "src/app/models/post";
 import { PostComponent } from "./post.component";
 import { ComponentFixture } from "@angular/core/testing"
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { By } from '@angular/platform-browser';
 
 describe('post component', () => {
   let comp: PostComponent;
@@ -35,7 +36,16 @@ describe('post component', () => {
     expect(a?.textContent).toContain(post.title);
   })
 
-  it('should raise an event wehen the delete post is clicked', () => {
+  it('should render the post title in the anchor element using debug element', () => {
+    comp.post = post;
+    fixture.detectChanges();
+    const postDebugElement = fixture.debugElement;
+    const aElement: HTMLElement = postDebugElement.query(By.css('a')).nativeElement;
+
+    expect(aElement?.textContent).toContain(post.title);
+  })
+
+  it('should raise an event when the delete post is clicked', () => {
     comp.post = post;
 
     comp.delete.pipe(first()).subscribe(selectedPost => {
