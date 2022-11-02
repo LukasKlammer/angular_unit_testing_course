@@ -1,9 +1,9 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import { of } from 'rxjs';
-import { Post } from 'src/app/models/post';
-import { PostService } from 'src/app/services/post/post.service';
-import { PostsComponent } from './posts.component';
-import {postcss} from "@angular-devkit/build-angular/src/webpack/plugins/postcss-cli-resources";
+import {of} from 'rxjs';
+import {Post} from 'src/app/models/post';
+import {PostService} from 'src/app/services/post/post.service';
+import {PostsComponent} from './posts.component';
+import {By} from "@angular/platform-browser";
 import {PostComponent} from "../post/post.component";
 
 describe(('Posts Component'), () => {
@@ -40,7 +40,7 @@ describe(('Posts Component'), () => {
           provide: PostService,
           useValue: mockPostService
         }
-      ]
+      ],
     })
     fixture = TestBed.createComponent(PostsComponent);
     component = fixture.componentInstance;
@@ -52,10 +52,40 @@ describe(('Posts Component'), () => {
       component.posts = POSTS;
     });
 
-    it('should set posts from the service directly', () => {
+    it('should create exact same number of Post Component with Posts', () => {
+      mockPostService.getPosts.and.returnValue(of(POSTS));
+      //ngOnInit
+      fixture.detectChanges();
+      const postComponentDEs = fixture.debugElement.queryAll(
+        By.directive(PostComponent)
+      );
+
+      expect(postComponentDEs.length).toEqual(POSTS.length);
+    });
+
+    it('should check whether the exact post is sending to PostComponent', () => {
+      mockPostService.getPosts.and.returnValue(of(POSTS));
+      fixture.detectChanges();
+      const postComponentDEs = fixture.debugElement.queryAll(By.directive(PostComponent));
+
+      for (let i = 0; i < postComponentDEs.length; i++) {
+        let postComponentInstance = postComponentDEs[i].componentInstance as PostComponent;
+        expect(postComponentInstance.post.title).toEqual(POSTS[i].title);
+      }
+    });
+
+    it('should set posts from the service directly ', () => {
       mockPostService.getPosts.and.returnValue(of(POSTS));
       fixture.detectChanges();
       expect(component.posts.length).toBe(3);
+    });
+
+    it('should create one post child Element for each post', () => {
+      mockPostService.getPosts.and.returnValue(of(POSTS));
+      fixture.detectChanges();
+      const debugElement = fixture.debugElement;
+      const postsElement = debugElement.queryAll(By.css('.posts'))
+      expect(postsElement.length).toBe(POSTS.length);
     });
 
     it('should delete the selected Post from the posts', () => {
