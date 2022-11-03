@@ -13,6 +13,10 @@ export class PostService {
     return this.http.get<Post[]>(`https://jsonplaceholder.typicode.com/posts`);
   }
 
+  getPost(postId: number) {
+    return this.http.get<Post>(`https://jsonplaceholder.typicode.com/posts/${postId}`);
+  }
+
   deletePost(post: Post) {
     return this.http.delete<Post[]>(`https://jsonplaceholder.typicode.com/post/${post.id}`);
   }
